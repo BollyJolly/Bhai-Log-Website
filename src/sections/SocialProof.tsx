@@ -166,8 +166,8 @@ export function SocialProof() {
           animate={{ x: ["0%", "-50%"] }}
           transition={{ ease: "linear", duration: 30, repeat: Infinity }}
         >
-          {[...Array(7), ...Array(7)].map((_, index) => {
-            const i = index % 7;
+          {[...Array(12), ...Array(12)].map((_, index) => {
+            const i = index % 12;
             return (
               <div
                 key={index}
