@@ -9,6 +9,19 @@ const videoImages = [
   "https://images.unsplash.com/photo-1505236858219-8359eb29e329?q=80&w=2062&auto=format&fit=crop"
 ];
 
+const cdnVideos = [
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783493440/Desi_comdey_01_1_1_1_ufwypm.mp4",
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783493586/Desi_comdey02_1_2_uavbw8.mp4",
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783493943/Desi_comdey_03_1_zegmim.mp4",
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783496574/Desi_comdey_04_compressed_1_lpslsy.mp4",
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783494493/Desi_Comdey_05_1_l68k4h.mp4",
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783495312/Desi_Comdey_06_1_lusxcv.mp4",
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783495592/Desi_Comdey_07_1_hvjvba.mp4",
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783495801/Desi_comdey_08_1_iv7pen.mp4",
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783496080/Desi_comdey_09_1_zyi2le.mp4",
+  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783496432/Desi_Comdey_10_compressed_ddrpv0.mp4"
+];
+
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
@@ -166,17 +179,17 @@ export function SocialProof() {
           animate={{ x: ["0%", "-50%"] }}
           transition={{ ease: "linear", duration: 30, repeat: Infinity }}
         >
-          {[...Array(12), ...Array(12)].map((_, index) => {
-            const i = index % 12;
+          {[...cdnVideos, ...cdnVideos].map((videoUrl, index) => {
+            const i = index % cdnVideos.length;
             return (
               <div
                 key={index}
                 className="relative w-64 md:w-72 lg:w-[300px] flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer group shadow-md"
                 style={{ aspectRatio: "4/5" }}
-                onClick={() => setSelectedVideo(`/videos/vid${i}.mp4`)}
+                onClick={() => setSelectedVideo(videoUrl)}
               >
                 <video
-                  src={`/videos/vid${i}.mp4`}
+                  src={videoUrl}
                   autoPlay
                   loop
                   muted

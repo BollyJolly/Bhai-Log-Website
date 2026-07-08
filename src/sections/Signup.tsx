@@ -17,6 +17,7 @@ const formSchema = z.object({
   email: z.string().email("Invalid email"),
   phone: z.string().min(7, "Phone is required"),
   city: z.string().min(2, "City is required"),
+  countryCode: z.string().optional(),
   source: z.string().optional(),
   agree: z.boolean().refine((v) => v === true, "You must agree to continue"),
 });
@@ -60,7 +61,7 @@ export function Signup() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: { agree: false },
+    defaultValues: { agree: false, countryCode: "+1" },
   });
 
   function onSubmit(_data: FormData) {
