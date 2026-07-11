@@ -11,6 +11,7 @@ import { Benefits } from "./sections/Benefits";
 import { SocialProof } from "./sections/SocialProof";
 import { Rewards } from "./sections/Rewards";
 import { Signup } from "./sections/Signup";
+import { FAQ } from "./sections/FAQ";
 import { Footer } from "./sections/Footer";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ function Home() {
       <Benefits />
       <Rewards />
       <Signup />
+      <FAQ />
       <Footer />
     </div>
   );
