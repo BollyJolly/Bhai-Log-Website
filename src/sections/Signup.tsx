@@ -50,6 +50,9 @@ const sources = [
   "Other",
 ];
 
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+const WEB3FORMS_ACCESS_KEY = "7b651f4a-b241-411d-bd66-50231d010b81";
+
 export function Signup() {
   const [submitted, setSubmitted] = useState(false);
 
@@ -64,7 +67,36 @@ export function Signup() {
     defaultValues: { agree: false, countryCode: "+1" },
   });
 
-  function onSubmit(_data: FormData) {
+  async function onSubmit(data: FormData) {
+    const response = await fetch(WEB3FORMS_ENDPOINT, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: new URLSearchParams({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        name: data.name,
+        email: data.email,
+        phone: `${data.countryCode ?? ""} ${data.phone}`.trim(),
+        city: data.city,
+        source: data.source ?? "",
+        agree: data.agree ? "Yes" : "No",
+        subject: "New Bhai Log signup",
+        message: [
+          `Name: ${data.name}`,
+          `Email: ${data.email}`,
+          `Phone: ${data.countryCode ?? ""} ${data.phone}`.trim(),
+          `City: ${data.city}`,
+          `Heard from: ${data.source ?? "Not provided"}`,
+          `Agreed to updates: ${data.agree ? "Yes" : "No"}`,
+        ].join("\n"),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to submit form");
+    }
+
     setSubmitted(true);
     setTimeout(() => {
       reset();
@@ -206,7 +238,22 @@ export function Signup() {
               <p className="text-foreground/60 text-sm mt-2">Check your WhatsApp for next steps.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+            <form
+              action={WEB3FORMS_ENDPOINT}
+              method="POST"
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-3"
+            >
+              <input type="hidden" name="access_key" value={WEB3FORMS_ACCESS_KEY} />
+              <input type="hidden" name="subject" value="New Bhai Log signup" />
+              <textarea
+                name="message"
+                className="hidden"
+                tabIndex={-1}
+                aria-hidden="true"
+                readOnly
+                value=""
+              />
               {/* Row 1: Name + Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
