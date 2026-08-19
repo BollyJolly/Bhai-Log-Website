@@ -1,26 +1,121 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import bgImage from "@assets/image_1779084650600.png";
 
-const videoImages = [
-  "https://images.unsplash.com/photo-1585699324551-f6c309eedeca?q=80&w=2070&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=2070&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1505236858219-8359eb29e329?q=80&w=2062&auto=format&fit=crop"
+const cdnVideos = [
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20comdey%2001%20.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20comdey02_compressed.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20comdey%2003.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20comdey%2004.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20Comdey%2005.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20Comdey%2006.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20Comdey%2007.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20comdey%2008%20_compressed.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20comdey%2009_compressed.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20comedy%2011_compressed.mp4",
+  "https://cdn.desicomedylive.com/compress-videos-bhailog/Desi%20Comedy%2012_compressed.mp4"
 ];
 
-const cdnVideos = [
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783493440/Desi_comdey_01_1_1_1_ufwypm.mp4",
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783493586/Desi_comdey02_1_2_uavbw8.mp4",
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783493943/Desi_comdey_03_1_zegmim.mp4",
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783496574/Desi_comdey_04_compressed_1_lpslsy.mp4",
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783494493/Desi_Comdey_05_1_l68k4h.mp4",
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783495312/Desi_Comdey_06_1_lusxcv.mp4",
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783495592/Desi_Comdey_07_1_hvjvba.mp4",
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783495801/Desi_comdey_08_1_iv7pen.mp4",
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783496080/Desi_comdey_09_1_zyi2le.mp4",
-  "https://res.cloudinary.com/ycsfqam6/video/upload/v1783496432/Desi_Comdey_10_compressed_ddrpv0.mp4"
-];
+function VideoCard({
+  videoUrl,
+  index,
+  onSelect,
+}: {
+  videoUrl: string;
+  index: number;
+  onSelect: (url: string) => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    const video = videoRef.current;
+    if (!el || !video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {});
+          }
+        } else {
+          video.pause();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "50px",
+      }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-64 md:w-72 lg:w-[300px] flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer group shadow-md bg-neutral-900 select-none"
+      style={{
+        aspectRatio: "4/5",
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
+      }}
+      onClick={() => onSelect(videoUrl)}
+    >
+      {/* Video Element with lightweight metadata preload */}
+      <video
+        ref={videoRef}
+        src={`${videoUrl}#t=0.001`}
+        preload="metadata"
+        loop
+        muted
+        playsInline
+        onLoadedMetadata={() => setIsLoaded(true)}
+        onLoadedData={() => setIsLoaded(true)}
+        onCanPlay={() => setIsLoaded(true)}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 group-hover:scale-105 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+        style={{ objectPosition: index % 2 === 0 ? "top" : "center" }}
+      />
+
+      {/* Shimmer Placeholder while first frame is buffering */}
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-neutral-800 animate-pulse flex items-center justify-center pointer-events-none">
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
+      )}
+
+      {/* Sleek Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent transition-opacity duration-300 group-hover:from-black/70 pointer-events-none" />
+
+      {/* Expand icon */}
+      <div className="absolute bottom-4 right-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 pointer-events-none">
+        <div className="text-white/90 group-hover:text-primary transition-colors drop-shadow-lg">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M15 3h6v6"></path>
+            <path d="M9 21H3v-6"></path>
+            <path d="M21 3l-7 7"></path>
+            <path d="M3 21l7-7"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -126,14 +221,24 @@ function TestimonialCard({ t, index, isMarquee = false }: TestimonialCardProps) 
 export function SocialProof() {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
-  // prevent body scrolling when modal is open
+  // prevent body scrolling and handle escape key when modal is open
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedVideo(null);
+      }
+    };
+
     if (selectedVideo) {
       document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
     } else {
       document.body.style.overflow = "auto";
     }
-    return () => { document.body.style.overflow = "auto"; };
+    return () => {
+      document.body.style.overflow = "auto";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [selectedVideo]);
 
   return (
@@ -176,42 +281,23 @@ export function SocialProof() {
       <div className="relative w-full overflow-hidden py-4">
         <motion.div
           className="flex gap-4 md:gap-6 pr-4 md:pr-6 w-max"
+          style={{
+            willChange: "transform",
+            transform: "translate3d(0, 0, 0)",
+            backfaceVisibility: "hidden",
+          }}
           animate={{ x: ["0%", "-50%"] }}
-          transition={{ ease: "linear", duration: 30, repeat: Infinity }}
+          transition={{ ease: "linear", duration: 45, repeat: Infinity }}
         >
           {[...cdnVideos, ...cdnVideos].map((videoUrl, index) => {
             const i = index % cdnVideos.length;
             return (
-              <div
-                key={index}
-                className="relative w-64 md:w-72 lg:w-[300px] flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer group shadow-md"
-                style={{ aspectRatio: "4/5" }}
-                onClick={() => setSelectedVideo(videoUrl)}
-              >
-                <video
-                  src={videoUrl}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  style={{ objectPosition: i % 2 === 0 ? "top" : "center" }}
-                />
-                {/* Sleek Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent transition-opacity duration-300 group-hover:from-black/70" />
-
-                {/* Expand icon */}
-                <div className="absolute bottom-4 right-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                  <div className="text-white/90 group-hover:text-primary transition-colors drop-shadow-lg">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M15 3h6v6"></path>
-                      <path d="M9 21H3v-6"></path>
-                      <path d="M21 3l-7 7"></path>
-                      <path d="M3 21l7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
+              <VideoCard
+                key={`${videoUrl}-${index}`}
+                videoUrl={videoUrl}
+                index={i}
+                onSelect={(url) => setSelectedVideo(url)}
+              />
             );
           })}
         </motion.div>
